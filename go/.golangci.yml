@@ -1,0 +1,23 @@
+version: "2"
+
+linters:
+  default: all
+  settings:
+    misspell:
+      locale: US
+    revive:
+      rules:
+        - name: exported
+          severity: warning
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/example/template
+
+run:
+  timeout: 5m
