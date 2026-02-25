@@ -16,3 +16,6 @@
 # Environment
 .env
 .env.local
+
+# Claude Code cache
+.claude/cache/

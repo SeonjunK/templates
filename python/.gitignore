@@ -65,3 +65,6 @@ dmypy.json
 # Logs
 *.log
 logs/
+
+# Claude Code cache
+.claude/cache/
