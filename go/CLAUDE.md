@@ -6,6 +6,9 @@ go/
 ├── cmd/           # Executable binaries (main package)
 ├── internal/      # Private packages
 ├── pkg/           # Public packages
+├── docs/
+│   ├── architecture/  # Architecture documentation
+│   └── guides/        # Development guides
 ├── go.mod         # Module definition
 ├── go.sum         # Dependency checksums
 └── .golangci.yml  # golangci-lint configuration
@@ -47,3 +50,18 @@ go install golang.org/x/tools/cmd/goimports@latest
 
 VS Code extensions:
 - `golang.go`
+
+## Documentation
+
+### docs/architecture/
+Maintains documents that reflect the structure and design of source code and project files.
+
+- Any change to code or files must be immediately reflected in the corresponding architecture document.
+- Documents always represent the current state of the actual source code and files.
+- Planned but not yet implemented content is marked with the `PLANNED` tag.
+
+### docs/guides/
+Maintains documents containing rules and guidelines that must be followed during development.
+
+- Includes coding conventions, collaboration rules, and workflow processes.
+- Always read the relevant guides before starting work and follow them.

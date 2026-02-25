@@ -6,6 +6,9 @@ rust/
 ├── src/
 │   └── lib.rs          # Library entry point
 ├── tests/              # Integration tests
+├── docs/
+│   ├── architecture/   # Architecture documentation
+│   └── guides/         # Development guides
 └── Cargo.toml          # Package manifest
 ```
 
@@ -35,3 +38,18 @@ rust/
 
 VS Code extensions:
 - `rust-lang.rust-analyzer`
+
+## Documentation
+
+### docs/architecture/
+Maintains documents that reflect the structure and design of source code and project files.
+
+- Any change to code or files must be immediately reflected in the corresponding architecture document.
+- Documents always represent the current state of the actual source code and files.
+- Planned but not yet implemented content is marked with the `PLANNED` tag.
+
+### docs/guides/
+Maintains documents containing rules and guidelines that must be followed during development.
+
+- Includes coding conventions, collaboration rules, and workflow processes.
+- Always read the relevant guides before starting work and follow them.
