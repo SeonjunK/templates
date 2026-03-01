@@ -1,5 +1,34 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-read.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-write.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-bash.sh"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
@@ -17,6 +46,21 @@
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/verify.sh"
+          },
+          {
+            "type": "agent",
+            "timeout": 60,
+            "prompt": "You are evaluating if documentation needs to be synchronized. Context: $ARGUMENTS\n\nRead transcript_path (JSONL) and analyze:\n1. Collect all Write/Edit files from the conversation\n2. If docs/ was changed or no files were changed → {\"ok\": true}\n3. If src/ code changes exist, read docs/architecture/README.md and check sync rules:\n   - Architecture/layer/structure changes → docs/architecture/README.md needs update\n   - New component/module → docs/architecture/README.md needs update\n   - Major technical decisions → new ADR in docs/adr/ needed\n4. Bugfixes/tests/internal refactors don't need docs updates → {\"ok\": true}\n\nRespond with JSON: {\"ok\": true} to allow stopping, or {\"ok\": false, \"reason\": \"docs needing update: {paths}\"} to continue."
+          },
+          {
+            "type": "agent",
+            "timeout": 60,
+            "prompt": "You are evaluating if all user-requested tasks are complete. Context: $ARGUMENTS\n\nRead transcript_path (JSONL) and analyze:\n1. Identify explicitly requested tasks from user (role: user) messages\n2. Check if each request was actually completed in subsequent conversation\n\nRespond with JSON: {\"ok\": true} to allow stopping, or {\"ok\": false, \"reason\": \"incomplete tasks: {list}\"} to continue."
+          },
+          {
+            "type": "agent",
+            "timeout": 90,
+            "prompt": "Check if all files in docs/guides/ were followed. Context: $ARGUMENTS\n\n1. Read all files in docs/guides/\n2. Check modified files against guide rules\n3. Respond JSON: {\"ok\": true} or {\"ok\": false, \"reason\": \"violations: ...\"}"
           }
         ]
       }

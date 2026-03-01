@@ -9,12 +9,12 @@ if [[ "$FILE" != *.go ]]; then
 fi
 
 if ! gofmt -w "$FILE" >/dev/null 2>&1; then
-  echo "{\"systemMessage\": \"⚠ Format failed for $FILE\", \"decision\": \"block\", \"reason\": \"Format failed. Run \`gofmt -w $FILE\` to see details.\"}"
+  jq -n -c --arg file "$FILE" '{"systemMessage": "⚠ Format failed for \($file)"}'
   exit 0
 fi
 
 if ! go tool golines -w "$FILE" >/dev/null 2>&1; then
-  echo "{\"systemMessage\": \"⚠ golines failed for $FILE\", \"decision\": \"block\", \"reason\": \"golines failed. Run \`go tool golines -w $FILE\` to see details.\"}"
+  jq -n -c --arg file "$FILE" '{"systemMessage": "⚠ golines failed for \($file)"}'
   exit 0
 fi
 

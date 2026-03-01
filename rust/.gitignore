@@ -13,3 +13,4 @@
 
 # Claude Code cache
 .claude/cache/
+.claude/logs/

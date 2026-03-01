@@ -9,7 +9,7 @@ if [[ "$FILE" != *.rs ]]; then
 fi
 
 if ! rustfmt "$FILE" >/dev/null 2>&1; then
-  echo "{\"systemMessage\": \"⚠ Format failed for $FILE\", \"decision\": \"block\", \"reason\": \"Format failed. Run \`rustfmt $FILE\` to see details.\"}"
+  jq -n -c --arg file "$FILE" '{"systemMessage": "⚠ Format failed for \($file)"}'
   exit 0
 fi
 

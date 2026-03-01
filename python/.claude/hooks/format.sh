@@ -9,7 +9,7 @@ if [[ "$FILE" != *.py ]]; then
 fi
 
 if ! uv run ruff format "$FILE" >/dev/null 2>&1; then
-  echo "{\"systemMessage\": \"⚠ Format failed for $FILE\", \"decision\": \"block\", \"reason\": \"Format failed. Run \`uv run ruff format $FILE\` to see details.\"}"
+  jq -n -c --arg file "$FILE" '{"systemMessage": "⚠ Format failed for \($file)"}'
   exit 0
 fi
 
