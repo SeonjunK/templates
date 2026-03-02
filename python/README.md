@@ -6,15 +6,24 @@ A modern Python project template with uv, Ruff, pytest, and mypy.
 
 ```
 python/
-├── src/           # Source code
-├── tests/         # Test files
+├── src/
+│   └── config/            # Configuration module
+│       ├── __init__.py
+│       ├── base.py        # BaseConfig, ConfigModel
+│       └── settings.py    # Settings, get_settings
+├── tests/
+│   └── unit/
+│       └── config/
+│           └── test_config.py
 ├── docs/
-│   ├── actions/       # Action logs
-│   ├── adr/           # Architecture Decision Records
-│   ├── architecture/  # Architecture documentation
-│   ├── guides/        # Development guides
-│   └── poc/           # Proof of Concept documents
-└── pyproject.toml # Project configuration
+│   ├── architecture/      # Architecture documentation
+│   ├── guides/            # Development guides
+│   ├── adr/               # Architecture Decision Records
+│   ├── actions/           # Action logs
+│   └── poc/               # PoC documents and datasets
+├── config.yaml            # Default configuration file
+├── .env.example           # Environment variable examples
+└── pyproject.toml
 ```
 
 ## Setup
