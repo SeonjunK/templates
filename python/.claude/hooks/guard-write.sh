@@ -1,6 +1,7 @@
 #!/bin/sh
 # Guard hook for Write/Edit tools - block sensitive file writes
 
+cd "$CLAUDE_PROJECT_DIR"
 set -e
 
 INPUT=$(cat)

@@ -3,25 +3,42 @@
 ## Project Structure
 ```
 python/
-├── src/           # Source code
-├── tests/         # Test files
+├── src/
+│   ├── log.py             # Logfire setup
+│   ├── main.py            # CLI entry point (Typer)
+│   └── config/            # Configuration module
+│       ├── __init__.py
+│       ├── base.py        # BaseConfig, ConfigModel
+│       └── settings.py    # Settings, get_settings
+├── tests/
+│   └── unit/
+│       └── config/
+│           └── test_config.py
 ├── docs/
-│   ├── architecture/  # Architecture documentation
-│   └── guides/        # Development guides
-└── pyproject.toml # Project configuration
+│   ├── architecture/      # Architecture documentation
+│   ├── guides/            # Development guides
+│   ├── adr/               # Architecture Decision Records
+│   ├── actions/           # Action logs
+│   └── poc/               # PoC documents and datasets
+├── config.yaml            # Default configuration file
+├── .env.example           # Environment variable examples
+└── pyproject.toml
 ```
 
 ## Commands (uv)
 - Sync: `uv sync`
+- Run: `uv run serve`
 - Format: `uv run ruff format .`
 - Lint: `uv run ruff check . --fix`
 - Test: `uv run pytest`
 - Type check: `uv run mypy src`
+- Coverage: `uv run pytest --cov=src --cov-report=term-missing`
 
 ## Code Style
 - Use Ruff for formatting and linting
 - Line length: 88 characters
 - Quote style: double quotes
+- Secret fields (passwords, tokens, keys, connection URLs) must use `SecretStr`
 
 ## Required Tools
 

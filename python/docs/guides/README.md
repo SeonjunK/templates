@@ -12,7 +12,8 @@ This directory maintains documents containing rules and guidelines that must be 
 
 | Document | Description |
 |:---------|:------------|
-| _Add guides here_ | _Documents will be listed as they are created_ |
+| [coding-conventions.md](coding-conventions.md) | Formatting, linting, type checking, security fields, testing conventions |
+| [testing.md](testing.md) | Test structure, config isolation, fixtures, SecretStr, cache management |
 
 ## Usage
 

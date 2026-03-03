@@ -1,6 +1,7 @@
 #!/bin/sh
 # Guard hook for Bash tool - block dangerous commands
 
+cd "$CLAUDE_PROJECT_DIR"
 set -e
 
 INPUT=$(cat)
@@ -8,7 +9,7 @@ CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null) || exit 
 GUARD_CONFIG="${CLAUDE_PROJECT_DIR:-}/.claude/guard.json"
 
 # Exit early if no command or no config
-if [ -z "$CMD" ] || [ ! -f "$GUARD_CONFIG" ]; then
+if [ -z "$CMD" ] || [ -z "${CLAUDE_PROJECT_DIR:-}" ] || [ ! -f "$GUARD_CONFIG" ]; then
   exit 0
 fi
 

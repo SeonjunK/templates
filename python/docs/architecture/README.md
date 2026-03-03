@@ -1,26 +1,37 @@
-# Architecture Documentation
+# Architecture
 
-This directory maintains documents that reflect the structure and design of source code and project files.
+## Source Structure
 
-## Purpose
-
-- Document the current state of the codebase architecture
-- Explain design decisions and patterns used in the project
-- Provide reference for understanding code structure
+```
+src/
+├── main.py          # CLI entry point (Typer)
+├── log.py           # Observability setup (Logfire + OTLP)
+└── config/
+    ├── __init__.py  # Public API re-exports
+    ├── base.py      # BaseConfig, ConfigModel (source priority definition)
+    └── settings.py  # Domain Config classes, Settings, get_settings
+```
 
 ## Documents
 
 | Document | Description |
 |:---------|:------------|
-| _Add architecture docs here_ | _Documents will be listed as they are created_ |
+| [cli.md](cli.md) | CLI entry point — Typer setup, startup flow |
+| [config.md](config.md) | Configuration system — class hierarchy, source priority, YAML injection, caching |
+| [observability.md](observability.md) | Observability — Logfire setup, OTLP flow, log parameters |
 
-## Guidelines
+---
 
-- **Sync with code**: Any change to code or files must be immediately reflected in the corresponding architecture document
-- **Current state only**: Documents always represent the current state of the actual source code and files
-- **PLANNED tag**: Use `PLANNED` tag to mark planned but not yet implemented content
+## Build
 
-## File Naming
+Uses hatchling with `src/` mapped as the package root.
 
-- Use descriptive names: `module-name.md`, `component-name.md`
-- Group related content in single files when appropriate
+```toml
+[tool.hatch.build.targets.wheel]
+only-include = ["src"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = ""
+```
+
+Installed package layout: `config/`, `main.py`, `log.py`

@@ -1,6 +1,8 @@
 #!/bin/bash
 # Format Python file after Write/Edit
 
+cd "$CLAUDE_PROJECT_DIR"
+
 INPUT=$(cat)
 FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 

@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(uv sync*)",
+      "Bash(uv run pytest*)",
+      "Bash(uv run ruff*)",
+      "Bash(uv run mypy*)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -49,18 +57,21 @@
           },
           {
             "type": "agent",
-            "timeout": 60,
-            "prompt": "You are evaluating if documentation needs to be synchronized. Context: $ARGUMENTS\n\nRead transcript_path (JSONL) and analyze:\n1. Collect all Write/Edit files from the conversation\n2. If docs/ was changed or no files were changed → {\"ok\": true}\n3. If src/ code changes exist, read docs/architecture/README.md and check sync rules:\n   - Architecture/layer/structure changes → docs/architecture/README.md needs update\n   - New component/module → docs/architecture/README.md needs update\n   - Major technical decisions → new ADR in docs/adr/ needed\n4. Bugfixes/tests/internal refactors don't need docs updates → {\"ok\": true}\n\nRespond with JSON: {\"ok\": true} to allow stopping, or {\"ok\": false, \"reason\": \"docs needing update: {paths}\"} to continue."
+            "name": "docs_sync",
+            "timeout": 90,
+            "prompt": "You are evaluating if documentation needs to be synchronized. Context: $ARGUMENTS\n\nRead transcript_path (JSONL) and analyze:\n1. Collect all Write/Edit files from the conversation\n2. If no src/ files were changed → {\"ok\": true}\n3. Classify the src/ changes: if all changes are bugfixes, test additions, or internal refactors with no behavioral/API/interface change → {\"ok\": true}\n4. For substantive src/ changes (new behavior, API change, config change, new module):\n   a. Read docs/architecture/README.md and extract every component doc listed in the Documents table\n   b. Read each component doc and identify which src/ files it covers — infer from the doc's own content (file paths, module names, class/function references mentioned in the doc)\n   c. For each changed src/ file, find all component docs that cover it (from step b). Read those docs and check whether they still accurately reflect the change. If any are out of sync → {\"ok\": false, \"reason\": \"docs needing update: {paths}\"}\n   d. README.md itself only needs updating for structural changes (new modules, renamed files)\n   e. Major technical decisions → new ADR in docs/adr/ needed\n\nRespond with JSON: {\"ok\": true} to allow stopping, or {\"ok\": false, \"reason\": \"docs needing update: {paths}\"} to continue."
           },
           {
             "type": "agent",
+            "name": "completion",
             "timeout": 60,
             "prompt": "You are evaluating if all user-requested tasks are complete. Context: $ARGUMENTS\n\nRead transcript_path (JSONL) and analyze:\n1. Identify explicitly requested tasks from user (role: user) messages\n2. Check if each request was actually completed in subsequent conversation\n\nRespond with JSON: {\"ok\": true} to allow stopping, or {\"ok\": false, \"reason\": \"incomplete tasks: {list}\"} to continue."
           },
           {
             "type": "agent",
+            "name": "guides",
             "timeout": 90,
-            "prompt": "Check if all files in docs/guides/ were followed. Context: $ARGUMENTS\n\n1. Read all files in docs/guides/\n2. Check modified files against guide rules\n3. Respond JSON: {\"ok\": true} or {\"ok\": false, \"reason\": \"violations: ...\"}"
+            "prompt": "Check if all files in docs/guides/ were followed. Context: $ARGUMENTS\n\n1. Read transcript_path (JSONL) and collect all Write/Edit files from the conversation\n2. If no src/ files were changed → {\"ok\": true}\n3. Read all files in docs/guides/\n4. For each changed src/ file, check it against applicable guide rules\n\nRespond JSON: {\"ok\": true} or {\"ok\": false, \"reason\": \"violations: ...\"}"
           }
         ]
       }

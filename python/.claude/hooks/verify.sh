@@ -1,6 +1,8 @@
 #!/bin/bash
 # Run format, lint, type check, and test on Stop
 
+cd "$CLAUDE_PROJECT_DIR"
+
 if ! uv run ruff format . >/dev/null 2>&1; then
   jq -n -c '{"decision": "block", "reason": "Format failed", "systemMessage": "⚠ Format failed. Run `uv run ruff format .` to see details."}'
   exit 0

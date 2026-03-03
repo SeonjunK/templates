@@ -1,0 +1,28 @@
+app:
+  name: my-app
+  env: development
+  debug: false
+  log_level: INFO
+
+server:
+  host: 127.0.0.1
+  port: 8000
+  workers: 1
+  reload: false
+
+database:
+  url: sqlite:///./dev.db
+  pool_size: 5
+  max_overflow: 10
+  echo: false
+
+auth:
+  algorithm: HS256
+  expire_minutes: 60
+  # secret_key is intentionally omitted — manage via env/dotenv
+
+otel:
+  endpoint: ""         # OTLP base URL (e.g. http://localhost:4318); empty = console only
+  headers: {}          # non-sensitive OTLP headers (e.g. X-Tenant-ID)
+  secret_headers: {}   # sensitive OTLP headers — manage via env/dotenv
+  send_to_logfire: false  # set to true to send traces to the Logfire platform

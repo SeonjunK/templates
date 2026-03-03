@@ -7,6 +7,8 @@ A modern Python project template with uv, Ruff, pytest, and mypy.
 ```
 python/
 ├── src/
+│   ├── log.py             # Logfire setup
+│   ├── main.py            # CLI entry point (Typer)
 │   └── config/            # Configuration module
 │       ├── __init__.py
 │       ├── base.py        # BaseConfig, ConfigModel

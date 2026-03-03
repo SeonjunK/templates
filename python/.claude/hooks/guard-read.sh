@@ -1,6 +1,7 @@
 #!/bin/sh
 # Guard hook for Read tool - block sensitive file access
 
+cd "$CLAUDE_PROJECT_DIR"
 set -e
 
 INPUT=$(cat)
