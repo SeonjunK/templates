@@ -2,13 +2,38 @@ version: "2"
 
 linters:
   default: all
+  disable:
+    - depguard      # no package restriction policy in this template
+    - err113        # dynamic error messages are needed for validation error reporting
+    - funlen        # table-driven tests are inherently long; configure per project
+    - lll           # golines handles line length; test error strings are intentionally verbose
+    - noinlineerr   # inline if err := ...; err != nil is idiomatic Go
+    - paralleltest  # tests use t.Chdir() which is incompatible with t.Parallel()
+    - testpackage   # same-package testing is intentional
+    - wsl           # deprecated in v2.2.0, replaced by wsl_v5
   settings:
+    exhaustruct:
+      exclude:
+        - '.+/cobra\.Command$'  # cobra.Command partial initialization is intentional
+    funlen:
+      lines: 80
+      statements: 50
+    gosec:
+      excludes:
+        - G101  # test files intentionally contain hardcoded credentials; review when enabling
     misspell:
       locale: US
     revive:
       rules:
         - name: exported
           severity: warning
+    varnamelen:
+      ignore-names:
+        - tt  # conventional name for table-driven test cases
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
 
 formatters:
   enable:
@@ -18,6 +43,13 @@ formatters:
     goimports:
       local-prefixes:
         - github.com/example/template
+
+issues:
+  exclude-rules:
+    - path: "(.+)_test\\.go"
+      linters:
+        - funlen  # table-driven tests can be long
+        - gosec   # G101: hardcoded credentials in test DSNs are intentional
 
 run:
   timeout: 5m

@@ -12,7 +12,8 @@ This directory maintains documents that reflect the structure and design of sour
 
 | Document | Description |
 |:---------|:------------|
-| _Add architecture docs here_ | _Documents will be listed as they are created_ |
+| [config.md](config.md) | Config package structure, priority order, env var mapping, validation |
+| [cli.md](cli.md)       | CLI entry point structure, Cobra command pattern, config integration  |
 
 ## Guidelines
 

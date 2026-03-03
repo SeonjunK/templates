@@ -50,7 +50,7 @@
           {
             "type": "agent",
             "timeout": 60,
-            "prompt": "You are evaluating if documentation needs to be synchronized. Context: $ARGUMENTS\n\nRead transcript_path (JSONL) and analyze:\n1. Collect all Write/Edit files from the conversation\n2. If docs/ was changed or no files were changed → {\"ok\": true}\n3. If src/ code changes exist, read docs/architecture/README.md and check sync rules:\n   - Architecture/layer/structure changes → docs/architecture/README.md needs update\n   - New component/module → docs/architecture/README.md needs update\n   - Major technical decisions → new ADR in docs/adr/ needed\n4. Bugfixes/tests/internal refactors don't need docs updates → {\"ok\": true}\n\nRespond with JSON: {\"ok\": true} to allow stopping, or {\"ok\": false, \"reason\": \"docs needing update: {paths}\"} to continue."
+            "prompt": "You are evaluating if documentation needs to be synchronized. Context: $ARGUMENTS\n\nParse transcript_path from the context JSON and read the JSONL transcript. Then:\n1. Collect all Write/Edit file paths from the conversation\n2. If no files were changed, or only docs/ files were changed → {\"ok\": true}\n3. If files under internal/, pkg/, or cmd/ were changed, read CLAUDE.md for sync rules and check:\n   - Architecture/layer/structure changes → corresponding docs/architecture/ document needs update\n   - New package or module added → docs/architecture/README.md needs update\n   - Major technical decisions → new ADR in docs/adr/ needed\n4. Bugfixes, tests, config changes, and internal refactors → {\"ok\": true}\n\nRespond with JSON only: {\"ok\": true} to allow stopping, or {\"ok\": false, \"reason\": \"docs needing update: {paths}\"} to continue."
           },
           {
             "type": "agent",
@@ -60,10 +60,22 @@
           {
             "type": "agent",
             "timeout": 90,
-            "prompt": "Check if all files in docs/guides/ were followed. Context: $ARGUMENTS\n\n1. Read all files in docs/guides/\n2. Check modified files against guide rules\n3. Respond JSON: {\"ok\": true} or {\"ok\": false, \"reason\": \"violations: ...\"}"
+            "prompt": "Check if all files in docs/guides/ were followed. Context: $ARGUMENTS\n\nParse transcript_path from the context JSON and read the JSONL transcript. Then:\n1. Read all .md files in docs/guides/ (excluding README.md)\n2. If no guide files exist, respond {\"ok\": true}\n3. Collect all Write/Edit file paths from the conversation\n4. For each guide, check if the modified files comply with the rules described\n5. Report the specific file and rule violated for each violation\n\nRespond with JSON only: {\"ok\": true} or {\"ok\": false, \"reason\": \"violations: {file}: {rule broken}\"}"
           }
         ]
       }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(go build:*)",
+      "Bash(go fmt:*)",
+      "Bash(go get:*)",
+      "Bash(go mod:*)",
+      "Bash(go test:*)",
+      "Bash(go tool golangci-lint:*)",
+      "Bash(go tool golines:*)",
+      "Bash(make:*)"
     ]
   }
 }
