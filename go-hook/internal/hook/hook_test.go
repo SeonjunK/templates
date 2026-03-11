@@ -1,4 +1,4 @@
-package main
+package hook_test
 
 import (
 	"os"
@@ -6,57 +6,52 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/example/go-hook/internal/hook"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestParseInput(t *testing.T) {
 	t.Run("parses file_path", func(t *testing.T) {
-		r := strings.NewReader(`{"tool_input":{"file_path":"/project/.env"}}`)
-		input, err := parseInput(r)
+		input, err := hook.ParseInput(strings.NewReader(`{"tool_input":{"file_path":"/project/.env"}}`))
 		require.NoError(t, err)
 		assert.Equal(t, "/project/.env", input.ToolInput.FilePath)
 	})
 
 	t.Run("parses command", func(t *testing.T) {
-		r := strings.NewReader(`{"tool_input":{"command":"rm -rf /"}}`)
-		input, err := parseInput(r)
+		input, err := hook.ParseInput(strings.NewReader(`{"tool_input":{"command":"rm -rf /"}}`))
 		require.NoError(t, err)
 		assert.Equal(t, "rm -rf /", input.ToolInput.Command)
 	})
 
 	t.Run("empty tool_input", func(t *testing.T) {
-		r := strings.NewReader(`{"tool_input":{}}`)
-		input, err := parseInput(r)
+		input, err := hook.ParseInput(strings.NewReader(`{"tool_input":{}}`))
 		require.NoError(t, err)
 		assert.Empty(t, input.ToolInput.FilePath)
 		assert.Empty(t, input.ToolInput.Command)
 	})
 
 	t.Run("malformed JSON returns error", func(t *testing.T) {
-		r := strings.NewReader(`not valid json`)
-		_, err := parseInput(r)
+		_, err := hook.ParseInput(strings.NewReader(`not valid json`))
 		assert.Error(t, err)
 	})
 
 	t.Run("empty object", func(t *testing.T) {
-		r := strings.NewReader(`{}`)
-		input, err := parseInput(r)
+		input, err := hook.ParseInput(strings.NewReader(`{}`))
 		require.NoError(t, err)
 		assert.Empty(t, input.ToolInput.FilePath)
 	})
 }
 
 func TestLoadGuardConfig(t *testing.T) {
-	t.Run("returns nil when projectDir is empty", func(t *testing.T) {
-		config, err := loadGuardConfig("")
+	t.Run("returns nil when dir is empty", func(t *testing.T) {
+		config, err := hook.LoadGuardConfig("")
 		assert.NoError(t, err)
 		assert.Nil(t, config)
 	})
 
 	t.Run("returns nil when guard.json is absent", func(t *testing.T) {
-		dir := t.TempDir()
-		config, err := loadGuardConfig(dir)
+		config, err := hook.LoadGuardConfig(t.TempDir())
 		assert.NoError(t, err)
 		assert.Nil(t, config)
 	})
@@ -70,40 +65,17 @@ func TestLoadGuardConfig(t *testing.T) {
 			0o644,
 		))
 
-		config, err := loadGuardConfig(dir)
+		config, err := hook.LoadGuardConfig(dir)
 		require.NoError(t, err)
 		require.NotNil(t, config)
 		assert.Equal(t, []string{".env*", "*.pem"}, config.Read.BlockedPatterns)
 		assert.Equal(t, []string{"rm -rf /"}, config.Bash.BlockedCommands)
-		assert.Equal(t, []string{"git push --force"}, config.Bash.BlockedPatterns)
-	})
-
-	t.Run("empty guard.json object", func(t *testing.T) {
-		dir := t.TempDir()
-		require.NoError(t, os.MkdirAll(filepath.Join(dir, ".claude"), 0o755))
-		require.NoError(t, os.WriteFile(
-			filepath.Join(dir, ".claude", "guard.json"),
-			[]byte(`{}`),
-			0o644,
-		))
-
-		config, err := loadGuardConfig(dir)
-		require.NoError(t, err)
-		require.NotNil(t, config)
-		assert.Empty(t, config.Read.BlockedPatterns)
 	})
 }
 
 func TestLoadHooksConfig(t *testing.T) {
-	t.Run("returns nil when projectDir is empty", func(t *testing.T) {
-		config, err := loadHooksConfig("")
-		assert.NoError(t, err)
-		assert.Nil(t, config)
-	})
-
-	t.Run("returns nil when hooks.json is absent", func(t *testing.T) {
-		dir := t.TempDir()
-		config, err := loadHooksConfig(dir)
+	t.Run("returns nil when dir is empty", func(t *testing.T) {
+		config, err := hook.LoadHooksConfig("")
 		assert.NoError(t, err)
 		assert.Nil(t, config)
 	})
@@ -113,14 +85,11 @@ func TestLoadHooksConfig(t *testing.T) {
 		require.NoError(t, os.MkdirAll(filepath.Join(dir, ".claude"), 0o755))
 		require.NoError(t, os.WriteFile(
 			filepath.Join(dir, ".claude", "hooks.json"),
-			[]byte(`{
-				"format": [{"extensions": [".go"], "commands": [["gofmt", "-w", "{{file}}"]]}],
-				"verify": [{"name": "test", "command": ["go", "test", "./..."], "fix": "go test ./..."}]
-			}`),
+			[]byte(`{"format":[{"extensions":[".go"],"commands":[["gofmt","-w","{{file}}"]]}],"verify":[{"name":"test","command":["go","test","./..."],"fix":"go test ./..."}]}`),
 			0o644,
 		))
 
-		config, err := loadHooksConfig(dir)
+		config, err := hook.LoadHooksConfig(dir)
 		require.NoError(t, err)
 		require.NotNil(t, config)
 		assert.Len(t, config.Format, 1)

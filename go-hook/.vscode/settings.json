@@ -1,0 +1,22 @@
+{
+  // Formatter (goimports = gofmt + import)
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+
+  // Linter
+  "go.lintTool": "golangci-lint-v2",
+
+  // gopls
+  "gopls": {
+    "formatting.gofumpt": false,
+    "ui.semanticTokens": true
+  },
+
+  // Coverage
+  "go.coverOnSave": true
+}

@@ -1,0 +1,26 @@
+# Architecture Documentation
+
+This directory maintains documents that reflect the structure and design of source code and project files.
+
+## Purpose
+
+- Document the current state of the codebase architecture
+- Explain design decisions and patterns used in the project
+- Provide reference for understanding code structure
+
+## Documents
+
+| Document | Description |
+|:---------|:------------|
+| [hook.md](hook.md) | Hook CLI architecture, command routing, package structure |
+
+## Guidelines
+
+- **Sync with code**: Any change to code or files must be immediately reflected in the corresponding architecture document
+- **Current state only**: Documents always represent the current state of the actual source code and files
+- **PLANNED tag**: Use `PLANNED` tag to mark planned but not yet implemented content
+
+## File Naming
+
+- Use descriptive names: `module-name.md`, `component-name.md`
+- Group related content in single files when appropriate

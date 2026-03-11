@@ -1,2 +1,22 @@
-# Build output
-hook
+# Binaries
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test cache
+*.test
+*.out
+
+# Build cache
+/vendor/
+
+# Environment
+.env
+.env.local
+
+# Claude Code cache
+.claude/cache/
+.claude/logs/

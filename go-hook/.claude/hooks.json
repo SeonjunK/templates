@@ -1,0 +1,33 @@
+{
+  "format": [
+    {
+      "extensions": [".go"],
+      "commands": [
+        ["gofmt", "-w", "{{file}}"],
+        ["go", "tool", "golines", "-w", "{{file}}"]
+      ]
+    }
+  ],
+  "verify": [
+    {
+      "name": "format",
+      "command": ["gofmt", "-l", "."],
+      "fix": "gofmt -w ."
+    },
+    {
+      "name": "golines",
+      "command": ["go", "tool", "golines", "-l", "."],
+      "fix": "go tool golines -w ."
+    },
+    {
+      "name": "lint",
+      "command": ["go", "tool", "golangci-lint", "run", "./..."],
+      "fix": "go tool golangci-lint run ./..."
+    },
+    {
+      "name": "test",
+      "command": ["go", "test", "-race", "./..."],
+      "fix": "go test -race ./..."
+    }
+  ]
+}
