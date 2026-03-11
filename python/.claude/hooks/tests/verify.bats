@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 # verify.sh tests - Python session-end quality verification hook
 
-SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/verify.sh"
+SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/../stop/verify.sh"
 
 bats_load_library bats-support
 bats_load_library bats-assert
@@ -11,6 +11,7 @@ setup() {
   MOCK_BIN="$TEST_TMPDIR/bin"
   mkdir -p "$MOCK_BIN"
   export PATH="$MOCK_BIN:$PATH"
+  export CLAUDE_PROJECT_DIR="$TEST_TMPDIR"
 }
 
 teardown() {
@@ -39,13 +40,13 @@ _mock_uv_pass() {
   chmod +x "$MOCK_BIN/uv"
   run bash "$SCRIPT"
   assert_success
-  assert_output "$(_expected_block 'Format failed' '⚠ Format failed. Run `uv run ruff format .` to see details.')"
+  assert_output "$(_expected_block 'Format failed' '⚠ Format check failed. Run `uv run ruff format .` to fix.')"
 }
 
 @test "blocks when ruff check fails" {
   cat > "$MOCK_BIN/uv" <<'EOF'
 #!/bin/bash
-if [[ "$3" == "format" ]]; then exit 0; fi
+if [[ "$3" == "format" && "$4" == "--check" ]]; then exit 0; fi
 exit 1
 EOF
   chmod +x "$MOCK_BIN/uv"

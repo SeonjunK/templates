@@ -1,8 +1,8 @@
 #!/usr/bin/env bats
-# guard-write.sh tests - sensitive file write blocking hook
+# guard-read.sh tests - sensitive file read blocking hook
 # Based on actual hook stdin format from logs
 
-SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/guard-write.sh"
+SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/../pre/guard-read.sh"
 
 bats_load_library bats-support
 bats_load_library bats-assert
@@ -34,7 +34,7 @@ _stdin() {
       cwd: "/tmp/project",
       permission_mode: $permission_mode,
       hook_event_name: "PreToolUse",
-      tool_name: "Write",
+      tool_name: "Read",
       tool_input: {file_path: $file_path},
       tool_use_id: "test-use-id"
     }'
@@ -65,7 +65,7 @@ _expected_deny() {
   refute_output
 }
 
-@test "allows when guard.json has no write key" {
+@test "allows when guard.json has no read key" {
   _guard_config <<< '{}'
   run sh "$SCRIPT" <<< "$(_stdin '/project/.env')"
   assert_success
@@ -79,64 +79,64 @@ _expected_deny() {
   refute_output
 }
 
-@test "blocks file write matching blocked pattern (default mode)" {
-  _guard_config <<< '{"write": {"blockedPatterns": [".env"]}}'
+@test "blocks file matching blocked pattern (default mode)" {
+  _guard_config <<< '{"read": {"blockedPatterns": [".env"]}}'
   run sh "$SCRIPT" <<< "$(_stdin '/project/.env' 'default')"
   assert_success
-  assert_output "$(_expected_deny '⚠ File write blocked: .env (matched pattern: .env)')"
+  assert_output "$(_expected_deny '⚠ File access blocked: .env (matched pattern: .env)')"
 }
 
-@test "blocks file write matching blocked pattern (bypassPermissions mode)" {
-  _guard_config <<< '{"write": {"blockedPatterns": [".env"]}}'
+@test "blocks file matching blocked pattern (bypassPermissions mode)" {
+  _guard_config <<< '{"read": {"blockedPatterns": [".env"]}}'
   run sh "$SCRIPT" <<< "$(_stdin '/project/.env' 'bypassPermissions')"
   assert_success
-  assert_output "$(_expected_deny '⚠ File write blocked: .env (matched pattern: .env)')"
+  assert_output "$(_expected_deny '⚠ File access blocked: .env (matched pattern: .env)')"
 }
 
-@test "blocks file write matching blocked pattern (plan mode)" {
-  _guard_config <<< '{"write": {"blockedPatterns": [".env"]}}'
+@test "blocks file matching blocked pattern (plan mode)" {
+  _guard_config <<< '{"read": {"blockedPatterns": [".env"]}}'
   run sh "$SCRIPT" <<< "$(_stdin '/project/.env' 'plan')"
   assert_success
-  assert_output "$(_expected_deny '⚠ File write blocked: .env (matched pattern: .env)')"
+  assert_output "$(_expected_deny '⚠ File access blocked: .env (matched pattern: .env)')"
 }
 
-@test "blocks file write matching blocked pattern (acceptEdits mode)" {
-  _guard_config <<< '{"write": {"blockedPatterns": [".env"]}}'
+@test "blocks file matching blocked pattern (acceptEdits mode)" {
+  _guard_config <<< '{"read": {"blockedPatterns": [".env"]}}'
   run sh "$SCRIPT" <<< "$(_stdin '/project/.env' 'acceptEdits')"
   assert_success
-  assert_output "$(_expected_deny '⚠ File write blocked: .env (matched pattern: .env)')"
+  assert_output "$(_expected_deny '⚠ File access blocked: .env (matched pattern: .env)')"
 }
 
-@test "blocks file write matching wildcard pattern" {
-  _guard_config <<< '{"write": {"blockedPatterns": ["*.key"]}}'
+@test "blocks file matching wildcard pattern" {
+  _guard_config <<< '{"read": {"blockedPatterns": ["*.key"]}}'
   run sh "$SCRIPT" <<< "$(_stdin '/project/private.key')"
   assert_success
-  assert_output "$(_expected_deny '⚠ File write blocked: private.key (matched pattern: *.key)')"
+  assert_output "$(_expected_deny '⚠ File access blocked: private.key (matched pattern: *.key)')"
 }
 
-@test "allows file write not matching any blocked pattern" {
-  _guard_config <<< '{"write": {"blockedPatterns": ["*.env"]}}'
+@test "allows file not matching any blocked pattern" {
+  _guard_config <<< '{"read": {"blockedPatterns": ["*.env"]}}'
   run sh "$SCRIPT" <<< "$(_stdin '/project/main.go')"
   assert_success
   refute_output
 }
 
 @test "blocks multiple patterns (.env*, *.pem, *.key)" {
-  _guard_config <<< '{"write": {"blockedPatterns": [".env*", "*.pem", "*.key"]}}'
-  run sh "$SCRIPT" <<< "$(_stdin '/project/cert.pem')"
+  _guard_config <<< '{"read": {"blockedPatterns": [".env*", "*.pem", "*.key"]}}'
+  run sh "$SCRIPT" <<< "$(_stdin '/project/.env.production')"
   assert_success
-  assert_output "$(_expected_deny '⚠ File write blocked: cert.pem (matched pattern: *.pem)')"
+  assert_output "$(_expected_deny '⚠ File access blocked: .env.production (matched pattern: .env*)')"
 }
 
 @test "allows similar but not matching pattern" {
-  _guard_config <<< '{"write": {"blockedPatterns": [".env"]}}'
+  _guard_config <<< '{"read": {"blockedPatterns": [".env"]}}'
   run sh "$SCRIPT" <<< "$(_stdin '/project/.envrc')"
   assert_success
   refute_output
 }
 
 @test "handles empty tool_input gracefully" {
-  _guard_config <<< '{"write": {"blockedPatterns": [".env"]}}'
+  _guard_config <<< '{"read": {"blockedPatterns": [".env"]}}'
   run sh "$SCRIPT" <<< '{"tool_input": {}}'
   assert_success
   refute_output

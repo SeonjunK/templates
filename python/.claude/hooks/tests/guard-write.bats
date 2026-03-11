@@ -2,7 +2,7 @@
 # guard-write.sh tests - sensitive file write blocking hook
 # Based on actual hook stdin format from logs
 
-SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/guard-write.sh"
+SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/../pre/guard-write.sh"
 
 bats_load_library bats-support
 bats_load_library bats-assert

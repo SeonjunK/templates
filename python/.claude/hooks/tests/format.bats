@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 # format.sh tests - Python file auto-format hook
 
-SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/format.sh"
+SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/../post/format.sh"
 
 bats_load_library bats-support
 bats_load_library bats-assert
@@ -11,6 +11,7 @@ setup() {
   MOCK_BIN="$TEST_TMPDIR/bin"
   mkdir -p "$MOCK_BIN"
   export PATH="$MOCK_BIN:$PATH"
+  export CLAUDE_PROJECT_DIR="$TEST_TMPDIR"
 }
 
 teardown() {

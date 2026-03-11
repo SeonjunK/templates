@@ -2,7 +2,7 @@
 # guard-bash.sh tests - dangerous bash command blocking hook
 # Based on actual hook stdin format from logs
 
-SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/guard-bash.sh"
+SCRIPT="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)/../pre/guard-bash.sh"
 
 bats_load_library bats-support
 bats_load_library bats-assert
