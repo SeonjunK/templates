@@ -29,6 +29,25 @@ type GuardConfig struct {
 	} `json:"bash"`
 }
 
+// FormatRule defines format commands for a set of file extensions.
+type FormatRule struct {
+	Extensions []string   `json:"extensions"`
+	Commands   [][]string `json:"commands"`
+}
+
+// VerifyStep defines a single verification step.
+type VerifyStep struct {
+	Name    string   `json:"name"`
+	Command []string `json:"command"`
+	Fix     string   `json:"fix"`
+}
+
+// HooksConfig represents the .claude/hooks.json configuration.
+type HooksConfig struct {
+	Format []FormatRule `json:"format"`
+	Verify []VerifyStep `json:"verify"`
+}
+
 // parseInput reads and parses the JSON hook input from the given reader.
 func parseInput(r io.Reader) (*HookInput, error) {
 	data, err := io.ReadAll(r)
@@ -42,13 +61,18 @@ func parseInput(r io.Reader) (*HookInput, error) {
 	return &input, nil
 }
 
+// projectDir returns CLAUDE_PROJECT_DIR or empty string.
+func projectDir() string {
+	return os.Getenv("CLAUDE_PROJECT_DIR")
+}
+
 // loadGuardConfig loads guard.json from the project directory.
 // Returns nil config (no error) if the project dir is unset or the file is absent.
-func loadGuardConfig(projectDir string) (*GuardConfig, error) {
-	if projectDir == "" {
+func loadGuardConfig(dir string) (*GuardConfig, error) {
+	if dir == "" {
 		return nil, nil
 	}
-	path := filepath.Join(projectDir, ".claude", "guard.json")
+	path := filepath.Join(dir, ".claude", "guard.json")
 	data, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -57,6 +81,27 @@ func loadGuardConfig(projectDir string) (*GuardConfig, error) {
 		return nil, err
 	}
 	var config GuardConfig
+	if err := json.Unmarshal(data, &config); err != nil {
+		return nil, err
+	}
+	return &config, nil
+}
+
+// loadHooksConfig loads hooks.json from the project directory.
+// Returns nil config (no error) if the project dir is unset or the file is absent.
+func loadHooksConfig(dir string) (*HooksConfig, error) {
+	if dir == "" {
+		return nil, nil
+	}
+	path := filepath.Join(dir, ".claude", "hooks.json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	var config HooksConfig
 	if err := json.Unmarshal(data, &config); err != nil {
 		return nil, err
 	}

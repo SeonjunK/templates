@@ -93,3 +93,39 @@ func TestLoadGuardConfig(t *testing.T) {
 		assert.Empty(t, config.Read.BlockedPatterns)
 	})
 }
+
+func TestLoadHooksConfig(t *testing.T) {
+	t.Run("returns nil when projectDir is empty", func(t *testing.T) {
+		config, err := loadHooksConfig("")
+		assert.NoError(t, err)
+		assert.Nil(t, config)
+	})
+
+	t.Run("returns nil when hooks.json is absent", func(t *testing.T) {
+		dir := t.TempDir()
+		config, err := loadHooksConfig(dir)
+		assert.NoError(t, err)
+		assert.Nil(t, config)
+	})
+
+	t.Run("loads valid hooks.json", func(t *testing.T) {
+		dir := t.TempDir()
+		require.NoError(t, os.MkdirAll(filepath.Join(dir, ".claude"), 0o755))
+		require.NoError(t, os.WriteFile(
+			filepath.Join(dir, ".claude", "hooks.json"),
+			[]byte(`{
+				"format": [{"extensions": [".go"], "commands": [["gofmt", "-w", "{{file}}"]]}],
+				"verify": [{"name": "test", "command": ["go", "test", "./..."], "fix": "go test ./..."}]
+			}`),
+			0o644,
+		))
+
+		config, err := loadHooksConfig(dir)
+		require.NoError(t, err)
+		require.NotNil(t, config)
+		assert.Len(t, config.Format, 1)
+		assert.Equal(t, []string{".go"}, config.Format[0].Extensions)
+		assert.Len(t, config.Verify, 1)
+		assert.Equal(t, "test", config.Verify[0].Name)
+	})
+}

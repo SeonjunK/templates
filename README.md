@@ -8,7 +8,19 @@ Language-specific project templates with opinionated tooling and conventions.
 |----------|-------|
 | [Go](./go/) | golangci-lint, goimports, golines |
 | [Python](./python/) | uv, ruff, mypy, pytest |
-| [Rust](./rust/) | cargo, clippy, rustfmt |
+
+## Shared Components
+
+| Component | Description |
+|-----------|-------------|
+| [go-hook](./go-hook/) | Language-agnostic Claude Code hook binary (Go) |
+
+## Setup
+
+```bash
+# Build hook binary for all templates
+make build-hook
+```
 
 ## Usage
 

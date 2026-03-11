@@ -1,0 +1,32 @@
+{
+  "format": [
+    {
+      "extensions": [".py"],
+      "commands": [
+        ["uv", "run", "ruff", "format", "{{file}}"]
+      ]
+    }
+  ],
+  "verify": [
+    {
+      "name": "format",
+      "command": ["uv", "run", "ruff", "format", "--check", "."],
+      "fix": "uv run ruff format ."
+    },
+    {
+      "name": "lint",
+      "command": ["uv", "run", "ruff", "check", "."],
+      "fix": "uv run ruff check . --fix"
+    },
+    {
+      "name": "mypy",
+      "command": ["uv", "run", "mypy", "src"],
+      "fix": "uv run mypy src"
+    },
+    {
+      "name": "test",
+      "command": ["uv", "run", "pytest", "--cov=src", "--cov-report=xml"],
+      "fix": "uv run pytest"
+    }
+  ]
+}

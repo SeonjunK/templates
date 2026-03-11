@@ -1,4 +1,7 @@
-// Package main provides a CLI tool for Claude Code hooks.
+// Package main provides a language-agnostic CLI tool for Claude Code hooks.
+//
+// Guard rules are read from .claude/guard.json.
+// Format and verify commands are read from .claude/hooks.json.
 //
 // Usage:
 //
@@ -9,8 +12,8 @@
 //	guard-read   Check if a file read should be blocked
 //	guard-write  Check if a file write should be blocked
 //	guard-bash   Check if a bash command should be blocked
-//	format       Format a Go file after write/edit
-//	verify       Run all quality checks before session stop
+//	format       Run configured format commands on a file
+//	verify       Run configured verification steps
 package main
 
 import (
@@ -33,9 +36,9 @@ func main() {
 	case "guard-bash":
 		err = guardBash()
 	case "format":
-		err = format()
+		err = formatCmd()
 	case "verify":
-		err = verify()
+		err = verifyCmd()
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", os.Args[1])
 		os.Exit(1)

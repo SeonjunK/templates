@@ -14,7 +14,7 @@ func guardRead() error {
 		return nil
 	}
 
-	config, err := loadGuardConfig(os.Getenv("CLAUDE_PROJECT_DIR"))
+	config, err := loadGuardConfig(projectDir())
 	if err != nil || config == nil {
 		return nil
 	}
@@ -36,7 +36,7 @@ func guardWrite() error {
 		return nil
 	}
 
-	config, err := loadGuardConfig(os.Getenv("CLAUDE_PROJECT_DIR"))
+	config, err := loadGuardConfig(projectDir())
 	if err != nil || config == nil {
 		return nil
 	}
@@ -58,7 +58,7 @@ func guardBash() error {
 		return nil
 	}
 
-	config, err := loadGuardConfig(os.Getenv("CLAUDE_PROJECT_DIR"))
+	config, err := loadGuardConfig(projectDir())
 	if err != nil || config == nil {
 		return nil
 	}
